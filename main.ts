@@ -1,10 +1,10 @@
-//  mode
-//  0 = running mode
-//  1 = lower thresshold setting
-//  2 = upper thresshold setting
-input.onButtonPressed(Button.A, function on_button_pressed_a() {
-    
+// modes
+// 0 = running mode
+// 1 = lower thresshold setting
+// 2 = upper thresshold setting
+input.onButtonPressed(Button.A, function () {
     if (mode == 0) {
+        // If running mode, switch to threshold_lower editing
         basic.showLeds(`
             # # # # #
             . # # # .
@@ -14,28 +14,33 @@ input.onButtonPressed(Button.A, function on_button_pressed_a() {
             `)
         mode = 1
     } else if (mode == 1) {
-        //  If running, switch to lower threshold editing
-        //  If lower-edit mode, decrease threshold
+        // If lower-edit mode, decrease threshold
         threshold_lower = threshold_lower - 5
-        led.plotBarGraph(threshold_lower, 700)
+        led.plotBarGraph(
+        threshold_lower,
+        700
+        )
     } else if (mode == 2) {
-        //  If upper-edit mode, decrease threshold
+        // If upper-edit mode, decrease threshold
         threshold_upper = threshold_upper - 5
-        led.plotBarGraph(threshold_upper, 700)
+        led.plotBarGraph(
+        threshold_upper,
+        700
+        )
     }
-    
 })
-input.onButtonPressed(Button.AB, function on_button_pressed_ab() {
-    
+input.onButtonPressed(Button.AB, function () {
     if (mode != 0) {
         mode = 0
     }
-    
-    led.plotBarGraph(moisturelvl, 700)
+    led.plotBarGraph(
+    moisturelvl,
+    700
+    )
 })
-input.onButtonPressed(Button.B, function on_button_pressed_b() {
-    
+input.onButtonPressed(Button.B, function () {
     if (mode == 0) {
+        // If running mode, switch to threshold_upper editing
         basic.showLeds(`
             # # # # #
             . . . . .
@@ -45,34 +50,39 @@ input.onButtonPressed(Button.B, function on_button_pressed_b() {
             `)
         mode = 1
     } else if (mode == 1) {
-        //  If running, switch to lower threshold editing
-        //  If lower-edit mode, increase threshold
+        // If lower-edit mode, increase threshold
         threshold_lower = threshold_lower + 5
-        led.plotBarGraph(threshold_lower, 700)
+        led.plotBarGraph(
+        threshold_lower,
+        700
+        )
     } else if (mode == 2) {
-        //  If upper-edit mode, increase threshold
+        // If upper-edit mode, increase threshold
         threshold_upper = threshold_upper + 5
-        led.plotBarGraph(threshold_upper, 700)
+        led.plotBarGraph(
+        threshold_upper,
+        700
+        )
     }
-    
 })
 let moisturelvl = 0
 let mode = 0
 let threshold_lower = 0
 let threshold_upper = 0
-threshold_upper = 400
+threshold_upper = 600
 threshold_lower = 200
-basic.forever(function on_forever() {
-    
+basic.forever(function () {
     moisturelvl = pins.analogReadPin(AnalogPin.P0)
     if (mode == 0) {
         if (moisturelvl <= threshold_lower) {
             basic.showIcon(IconNames.Umbrella)
+            soundExpression.twinkle.playUntilDone()
         } else {
-            led.plotBarGraph(moisturelvl, 700)
+            led.plotBarGraph(
+            moisturelvl,
+            700
+            )
         }
-        
     }
-    
-    basic.pause(1000)
+    basic.pause(5000)
 })

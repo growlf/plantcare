@@ -1,4 +1,4 @@
-# mode
+# modes
 # 0 = running mode
 # 1 = lower thresshold setting
 # 2 = upper thresshold setting
@@ -6,6 +6,7 @@
 def on_button_pressed_a():
     global mode, threshold_lower, threshold_upper
     if mode == 0:
+        # If running mode, switch to threshold_lower editing
         basic.show_leds("""
             # # # # #
             . # # # .
@@ -15,7 +16,6 @@ def on_button_pressed_a():
             """)
         mode = 1
     elif mode == 1:
-        # If running, switch to lower threshold editing
         # If lower-edit mode, decrease threshold
         threshold_lower = threshold_lower - 5
         led.plot_bar_graph(threshold_lower, 700)
@@ -35,6 +35,7 @@ input.on_button_pressed(Button.AB, on_button_pressed_ab)
 def on_button_pressed_b():
     global mode, threshold_lower, threshold_upper
     if mode == 0:
+        # If running mode, switch to threshold_upper editing
         basic.show_leds("""
             # # # # #
             . . . . .
@@ -44,7 +45,6 @@ def on_button_pressed_b():
             """)
         mode = 1
     elif mode == 1:
-        # If running, switch to lower threshold editing
         # If lower-edit mode, increase threshold
         threshold_lower = threshold_lower + 5
         led.plot_bar_graph(threshold_lower, 700)
