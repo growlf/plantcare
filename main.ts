@@ -1,12 +1,20 @@
 let moisturelvl = 0
+let threshold = 0
+threshold = 200
+input.onButtonPressed(Button.A, function on_button_pressed_a() {
+    
+    threshold = threshold - 5
+    basic.showNumber(threshold)
+})
 basic.forever(function on_forever() {
     
-    moisturelvl = 0.00
-    if (pins.digitalReadPin(DigitalPin.P0) <= 0.00) {
+    moisturelvl = pins.analogReadPin(AnalogPin.P0)
+    if (moisturelvl <= threshold) {
         basic.showIcon(IconNames.Umbrella)
+    } else {
+        basic.showIcon(IconNames.House)
+        basic.showNumber(moisturelvl)
     }
     
-    control.waitMicros(4000)
-    basic.showIcon(IconNames.House)
-    console.log(moisturelvl)
+    basic.pause(1000)
 })

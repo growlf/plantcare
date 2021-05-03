@@ -1,11 +1,20 @@
 moisturelvl = 0
+threshold = 0
+threshold = 200
+
+def on_button_pressed_a():
+    global threshold
+    threshold = threshold - 5
+    basic.show_number(threshold)
+input.on_button_pressed(Button.A, on_button_pressed_a)
 
 def on_forever():
     global moisturelvl
-    moisturelvl = 0.00
-    if pins.digital_read_pin(DigitalPin.P0) <= 0.00:
+    moisturelvl = pins.analog_read_pin(AnalogPin.P0)
+    if moisturelvl <= threshold:
         basic.show_icon(IconNames.UMBRELLA)
-    control.wait_micros(4000)
-    basic.show_icon(IconNames.HOUSE)
-    print(moisturelvl)
+    else:
+        basic.show_icon(IconNames.HOUSE)
+        basic.show_number(moisturelvl)
+    basic.pause(1000)
 basic.forever(on_forever)
