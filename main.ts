@@ -1,8 +1,8 @@
 let moisturelvl = 0
 basic.forever(function on_forever() {
     
-    moisturelvl = 0
-    if (pins.digitalReadPin(DigitalPin.P0) <= 0) {
+    moisturelvl = 0.00
+    if (pins.digitalReadPin(DigitalPin.P0) <= 0.00) {
         basic.showIcon(IconNames.Umbrella)
     }
     
