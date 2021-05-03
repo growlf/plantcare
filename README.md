@@ -25,6 +25,10 @@ This image may take a few minutes to refresh.
 
 ![A rendered view of the blocks](https://github.com/growlf/plantcare/raw/master/.github/makecode/blocks.png)
 
+## Hardware Used
+
+[Gravity: Analog Soil Moisture Sensor For Arduino](https://www.dfrobot.com/product-599.html), a [Micro:Bit](https://microbit.org/), and a couple wires.
+
 #### Metadata (used for search, rendering)
 
 * for PXT/microbit
