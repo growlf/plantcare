@@ -18,18 +18,18 @@ def on_button_pressed_a():
     elif mode == 1:
         # If lower-edit mode, decrease threshold
         threshold_lower = threshold_lower - 5
-        led.plot_bar_graph(threshold_lower, 700)
+        led.plot_bar_graph(threshold_lower, moisture_max)
     elif mode == 2:
         # If upper-edit mode, decrease threshold
         threshold_upper = threshold_upper - 5
-        led.plot_bar_graph(threshold_upper, 700)
+        led.plot_bar_graph(threshold_upper, moisture_max)
 input.on_button_pressed(Button.A, on_button_pressed_a)
 
 def on_button_pressed_ab():
     global mode
     if mode != 0:
         mode = 0
-    led.plot_bar_graph(moisturelvl, 700)
+    led.plot_bar_graph(moisturelvl, moisture_max)
 input.on_button_pressed(Button.AB, on_button_pressed_ab)
 
 def on_button_pressed_b():
@@ -47,27 +47,30 @@ def on_button_pressed_b():
     elif mode == 1:
         # If lower-edit mode, increase threshold
         threshold_lower = threshold_lower + 5
-        led.plot_bar_graph(threshold_lower, 700)
+        led.plot_bar_graph(threshold_lower, moisture_max)
     elif mode == 2:
         # If upper-edit mode, increase threshold
         threshold_upper = threshold_upper + 5
-        led.plot_bar_graph(threshold_upper, 700)
+        led.plot_bar_graph(threshold_upper, moisture_max)
 input.on_button_pressed(Button.B, on_button_pressed_b)
 
 moisturelvl = 0
 mode = 0
 threshold_lower = 0
 threshold_upper = 0
-threshold_upper = 400
-threshold_lower = 200
+threshold_upper = 600
+threshold_lower = 500
+moisture_max = 950
+delay_ms = 5000
 
 def on_forever():
-    global moisturelvl
+    global moisturelvl, delay_ms
     moisturelvl = pins.analog_read_pin(AnalogPin.P0)
     if mode == 0:
         if moisturelvl <= threshold_lower:
             basic.show_icon(IconNames.UMBRELLA)
+            soundExpression.twinkle.play_until_done()
         else:
-            led.plot_bar_graph(moisturelvl, 700)
-    basic.pause(1000)
+            led.plot_bar_graph(moisturelvl, moisture_max)
+    basic.pause(delay_ms)
 basic.forever(on_forever)
