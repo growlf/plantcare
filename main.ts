@@ -57,23 +57,27 @@ input.onButtonPressed(Button.B, function on_button_pressed_b() {
     
 })
 let moisturelvl = 0
+let moisture_range = 0
+let moisture_graph = 0
 let mode = 0
 let moisture_max = 0
-let threshold_lower = 0
-let threshold_upper = 0
-threshold_upper = 600
-threshold_lower = 500
+let threshold_upper = 600
+let threshold_lower = 500
 moisture_max = 950
-let delay_ms = 5000
+let delay_ms = 1000
+// inValue = pins.i2c_read_number(36, NumberFormat.UINT16_BE, False)
 basic.forever(function on_forever() {
     
+    
     moisturelvl = pins.analogReadPin(AnalogPin.P0)
+    moisture_range = threshold_upper - threshold_lower
+    let moisture_graph = (moisturelvl - threshold_lower) / moisture_range * moisture_range
     if (mode == 0) {
         if (moisturelvl <= threshold_lower) {
             basic.showIcon(IconNames.Umbrella)
             soundExpression.twinkle.playUntilDone()
         } else {
-            led.plotBarGraph(moisturelvl, moisture_max)
+            led.plotBarGraph(moisture_graph, moisture_range)
         }
         
     }

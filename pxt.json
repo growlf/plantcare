@@ -4,7 +4,8 @@
     "dependencies": {
         "core": "*",
         "radio": "*",
-        "microphone": "*"
+        "microphone": "*",
+        "seesaw": "github:adafruit/pxt-seesaw#v0.0.19"
     },
     "files": [
         "main.blocks",

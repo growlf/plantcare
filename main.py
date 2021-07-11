@@ -55,23 +55,27 @@ def on_button_pressed_b():
 input.on_button_pressed(Button.B, on_button_pressed_b)
 
 moisturelvl = 0
+moisture_range = 0
+moisture_graph = 0
 mode = 0
 moisture_max = 0
-threshold_lower = 0
-threshold_upper = 0
 threshold_upper = 600
 threshold_lower = 500
 moisture_max = 950
-delay_ms = 5000
+delay_ms = 1000
+#inValue = pins.i2c_read_number(36, NumberFormat.UINT16_BE, False)
 
 def on_forever():
     global moisturelvl
+    global moisture_range
     moisturelvl = pins.analog_read_pin(AnalogPin.P0)
+    moisture_range = threshold_upper-threshold_lower
+    moisture_graph = ((moisturelvl - threshold_lower) / moisture_range) * moisture_range
     if mode == 0:
         if moisturelvl <= threshold_lower:
             basic.show_icon(IconNames.UMBRELLA)
             soundExpression.twinkle.play_until_done()
         else:
-            led.plot_bar_graph(moisturelvl, moisture_max)
+            led.plot_bar_graph(moisture_graph, moisture_range)
     basic.pause(delay_ms)
 basic.forever(on_forever)
