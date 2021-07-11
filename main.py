@@ -9,11 +9,11 @@ def on_button_pressed_a():
         # If running mode, switch to threshold_lower editing
         basic.show_leds("""
             # # # # #
-            . # # # .
-            . . # . .
-            . . . . .
-            # # # # #
-            """)
+                        . # # # .
+                        . . # . .
+                        . . . . .
+                        # # # # #
+        """)
         mode = 1
     elif mode == 1:
         # If lower-edit mode, decrease threshold
@@ -38,11 +38,11 @@ def on_button_pressed_b():
         # If running mode, switch to threshold_upper editing
         basic.show_leds("""
             # # # # #
-            . . . . .
-            . . # . .
-            . # # # .
-            # # # # #
-            """)
+                        . . . . .
+                        . . # . .
+                        . # # # .
+                        # # # # #
+        """)
         mode = 1
     elif mode == 1:
         # If lower-edit mode, increase threshold
@@ -56,6 +56,7 @@ input.on_button_pressed(Button.B, on_button_pressed_b)
 
 moisturelvl = 0
 mode = 0
+moisture_max = 0
 threshold_lower = 0
 threshold_upper = 0
 threshold_upper = 600
@@ -64,7 +65,7 @@ moisture_max = 950
 delay_ms = 5000
 
 def on_forever():
-    global moisturelvl, delay_ms
+    global moisturelvl
     moisturelvl = pins.analog_read_pin(AnalogPin.P0)
     if mode == 0:
         if moisturelvl <= threshold_lower:

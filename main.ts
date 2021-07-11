@@ -8,11 +8,11 @@ input.onButtonPressed(Button.A, function on_button_pressed_a() {
         //  If running mode, switch to threshold_lower editing
         basic.showLeds(`
             # # # # #
-            . # # # .
-            . . # . .
-            . . . . .
-            # # # # #
-            `)
+                        . # # # .
+                        . . # . .
+                        . . . . .
+                        # # # # #
+        `)
         mode = 1
     } else if (mode == 1) {
         //  If lower-edit mode, decrease threshold
@@ -39,11 +39,11 @@ input.onButtonPressed(Button.B, function on_button_pressed_b() {
         //  If running mode, switch to threshold_upper editing
         basic.showLeds(`
             # # # # #
-            . . . . .
-            . . # . .
-            . # # # .
-            # # # # #
-            `)
+                        . . . . .
+                        . . # . .
+                        . # # # .
+                        # # # # #
+        `)
         mode = 1
     } else if (mode == 1) {
         //  If lower-edit mode, increase threshold
@@ -58,11 +58,12 @@ input.onButtonPressed(Button.B, function on_button_pressed_b() {
 })
 let moisturelvl = 0
 let mode = 0
+let moisture_max = 0
 let threshold_lower = 0
 let threshold_upper = 0
 threshold_upper = 600
 threshold_lower = 500
-let moisture_max = 950
+moisture_max = 950
 let delay_ms = 5000
 basic.forever(function on_forever() {
     
