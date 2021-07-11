@@ -1,14 +1,14 @@
-# running_modes
+# modes
 # 0 = constant/curent display
-# 1 = lower thresshold menu
-# 2 = upper thresshold menu
+# 1 = lower threshold menu
+# 2 = upper threshold menu
 
 def on_button_pressed_a():
-    global running_mode, lower_threshold, upper_threshold
-    # When the A button is pressed, either select the lowerthreshold menu running_mode
-    # or decrease the threshold of the running_mode that is currently selected
-    if running_mode == 0:
-        # If running running_mode, switch to lower_threshold editing and display an indicator
+    global mode, low_threshold, top_threshold
+    # When the A button is pressed, either select the lowerthreshold menu mode
+    # or decrease the threshold of the mode that is currently selected
+    if mode == 0:
+        # If mode is "running/display", switch to low_threshold editing and display an indicator
         basic.show_leds("""
             # # # # #
                         . # # # .
@@ -16,28 +16,34 @@ def on_button_pressed_a():
                         . . . . .
                         # # # # #
         """)
-        running_mode = 1
+        mode = 1
         basic.pause(1000)
-    elif running_mode == 1:
-        # If lower-edit running_mode, decrease lower threshold
-        lower_threshold = lower_threshold - 5
-    elif running_mode == 2:
-        # If upper-edit running_mode, decrease upper threshold
-        upper_threshold = upper_threshold - 5
+    elif mode == 1:
+        # If lower-edit mode, decrease lower threshold
+        low_threshold = low_threshold - 5
+        # limit threshold to zero for sanity
+        if low_threshold < 0:
+            low_threshold = 0
+    elif mode == 2:
+        # If upper-edit mode, decrease upper threshold
+        top_threshold = top_threshold - 5
+        # Limit threshold to always be equal or above low_threshold
+        if top_threshold < low_threshold:
+            top_threshold = low_threshold
 input.on_button_pressed(Button.A, on_button_pressed_a)
 
 def on_button_pressed_ab():
-    global running_mode
-    if running_mode != 0:
-        running_mode = 0
+    global mode
+    if mode != 0:
+        mode = 0
 input.on_button_pressed(Button.AB, on_button_pressed_ab)
 
 def on_button_pressed_b():
-    global running_mode, lower_threshold, upper_threshold
-    # When the B button is pressed, either select the upper threshold menu running_mode
-    # or increase the threshold of the running_mode that is currently selected
-    if running_mode == 0:
-        # If running running_mode, switch to upper_threshold editing and display an indicator
+    global mode, low_threshold, top_threshold
+    # When the B button is pressed, either select the upper threshold menu mode
+    # or increase the threshold of the mode that is currently selected
+    if mode == 0:
+        # If mode is "running/display", switch to top_threshold editing and display an indicator
         basic.show_leds("""
             # # # # #
                         . . . . .
@@ -45,41 +51,52 @@ def on_button_pressed_b():
                         . # # # .
                         # # # # #
         """)
-        running_mode = 2
+        mode = 2
         basic.pause(1000)
-    elif running_mode == 1:
-        # If lower-edit running_mode, increase lower threshold
-        lower_threshold = lower_threshold + 5
-    elif running_mode == 2:
-        # If upper-edit running_mode, increase upper threshold
-        upper_threshold = upper_threshold + 5
+    elif mode == 1:
+        # If lower-edit mode, increase lower threshold
+        low_threshold = low_threshold + 5
+        # Limit low_threshold to always be equal or below top_threshold
+        if low_threshold > top_threshold:
+            low_threshold = top_threshold
+    elif mode == 2:
+        # If upper-edit mode, increase upper threshold
+        top_threshold = top_threshold + 5
+        # Limit top_threshold to always be below the sensor_max
+        if top_threshold > sensor_max:
+            top_threshold = sensor_max
 input.on_button_pressed(Button.B, on_button_pressed_b)
 
-moisture_graph_value = 0
-moisture_graph_range = 0
+mgraph_val = 0
+mgraph_range = 0
 moisturelvl = 0
-running_mode = 0
-lower_threshold = 0
-upper_threshold = 0
-upper_threshold = 600
-lower_threshold = 500
-moisture_max = 950
+mode = 0
+sensor_max = 0
+low_threshold = 0
+top_threshold = 0
+# Default top_threshold
+top_threshold = 600
+# Default low_threshold
+low_threshold = 500
+# sensor_max is the value from the hardwaree device spec sheet
+sensor_max = 950
+# delay_ms is the time to delay between updates in miliseconds
 delay_ms = 1000
 
 def on_forever():
-    global moisturelvl, moisture_graph_range, moisture_graph_value
+    global moisturelvl, mgraph_range, mgraph_val, top_threshold, low_threshold, delay_ms
     # Read the moisture sensor
     moisturelvl = pins.analog_read_pin(AnalogPin.P0)
     # Calculate the range (in case it has changed)
-    moisture_graph_range = upper_threshold - lower_threshold
-    moisture_graph_value = moisturelvl - lower_threshold
-    if running_mode == 0:
-        # In running running_mode, check if the moisture is in range and alert if it is not
-        if moisture_graph_value <= 0:
+    mgraph_range = top_threshold - low_threshold
+    mgraph_val = moisturelvl - low_threshold
+    if mode == 0:
+        # In running mode, check if the moisture is in range and alert if it is not
+        if mgraph_val <= 0:
             basic.show_icon(IconNames.UMBRELLA)
             soundExpression.twinkle.play_until_done()
-    # In other running_modes, display the current moisture in the context of the specified moisture_graph_range
-    led.plot_bar_graph(moisture_graph_value, moisture_graph_range)
+    # In other modes, display the current moisture in the context of the specified mgraph_range
+    led.plot_bar_graph(mgraph_val, mgraph_range)
     # Pause to leave the display on long enough to be seen
     basic.pause(delay_ms)
 basic.forever(on_forever)

@@ -1,90 +1,105 @@
-//  running_modes
-//  0 = constant/curent display
-//  1 = lower thresshold menu
-//  2 = upper thresshold menu
-input.onButtonPressed(Button.A, function on_button_pressed_a() {
-    
-    //  When the A button is pressed, either select the lowerthreshold menu running_mode
-    //  or decrease the threshold of the running_mode that is currently selected
-    if (running_mode == 0) {
-        //  If running running_mode, switch to lower_threshold editing and display an indicator
+// modes
+// 0 = constant/curent display
+// 1 = lower threshold menu
+// 2 = upper threshold menu
+input.onButtonPressed(Button.A, function () {
+    // When the A button is pressed, either select the lowerthreshold menu mode
+    // or decrease the threshold of the mode that is currently selected
+    if (mode == 0) {
+        // If mode is "running/display", switch to low_threshold editing and display an indicator
         basic.showLeds(`
             # # # # #
-                        . # # # .
-                        . . # . .
-                        . . . . .
-                        # # # # #
-        `)
-        running_mode = 1
+            . # # # .
+            . . # . .
+            . . . . .
+            # # # # #
+            `)
+        mode = 1
         basic.pause(1000)
-    } else if (running_mode == 1) {
-        //  If lower-edit running_mode, decrease lower threshold
-        lower_threshold = lower_threshold - 5
-    } else if (running_mode == 2) {
-        //  If upper-edit running_mode, decrease upper threshold
-        upper_threshold = upper_threshold - 5
+    } else if (mode == 1) {
+        // If lower-edit mode, decrease lower threshold
+        low_threshold = low_threshold - 5
+        // limit threshold to zero for sanity
+        if (low_threshold < 0) {
+            low_threshold = 0
+        }
+    } else if (mode == 2) {
+        // If upper-edit mode, decrease upper threshold
+        top_threshold = top_threshold - 5
+        // Limit threshold to always be equal or above low_threshold
+        if (top_threshold < low_threshold) {
+            top_threshold = low_threshold
+        }
     }
-    
 })
-input.onButtonPressed(Button.AB, function on_button_pressed_ab() {
-    
-    if (running_mode != 0) {
-        running_mode = 0
+input.onButtonPressed(Button.AB, function () {
+    if (mode != 0) {
+        mode = 0
     }
-    
 })
-input.onButtonPressed(Button.B, function on_button_pressed_b() {
-    
-    //  When the B button is pressed, either select the upper threshold menu running_mode
-    //  or increase the threshold of the running_mode that is currently selected
-    if (running_mode == 0) {
-        //  If running running_mode, switch to upper_threshold editing and display an indicator
+input.onButtonPressed(Button.B, function () {
+    // When the B button is pressed, either select the upper threshold menu mode
+    // or increase the threshold of the mode that is currently selected
+    if (mode == 0) {
+        // If mode is "running/display", switch to top_threshold editing and display an indicator
         basic.showLeds(`
             # # # # #
-                        . . . . .
-                        . . # . .
-                        . # # # .
-                        # # # # #
-        `)
-        running_mode = 2
+            . . . . .
+            . . # . .
+            . # # # .
+            # # # # #
+            `)
+        mode = 2
         basic.pause(1000)
-    } else if (running_mode == 1) {
-        //  If lower-edit running_mode, increase lower threshold
-        lower_threshold = lower_threshold + 5
-    } else if (running_mode == 2) {
-        //  If upper-edit running_mode, increase upper threshold
-        upper_threshold = upper_threshold + 5
+    } else if (mode == 1) {
+        // If lower-edit mode, increase lower threshold
+        low_threshold = low_threshold + 5
+        // Limit low_threshold to always be equal or below top_threshold
+        if (low_threshold > top_threshold) {
+            low_threshold = top_threshold
+        }
+    } else if (mode == 2) {
+        // If upper-edit mode, increase upper threshold
+        top_threshold = top_threshold + 5
+        // Limit top_threshold to always be below the sensor_max
+        if (top_threshold > sensor_max) {
+            top_threshold = sensor_max
+        }
     }
-    
 })
-let moisture_graph_value = 0
-let moisture_graph_range = 0
+let mgraph_val = 0
+let mgraph_range = 0
 let moisturelvl = 0
-let running_mode = 0
-let lower_threshold = 0
-let upper_threshold = 0
-upper_threshold = 600
-lower_threshold = 500
-let moisture_max = 950
+let mode = 0
+let sensor_max = 0
+let low_threshold = 0
+let top_threshold = 0
+// Default top_threshold
+top_threshold = 600
+// Default low_threshold
+low_threshold = 500
+// sensor_max is the value from the hardwaree device spec sheet
+sensor_max = 950
+// delay_ms is the time to delay between updates in miliseconds
 let delay_ms = 1000
-basic.forever(function on_forever() {
-    
-    //  Read the moisture sensor
+basic.forever(function () {
+    // Read the moisture sensor
     moisturelvl = pins.analogReadPin(AnalogPin.P0)
-    //  Calculate the range (in case it has changed)
-    moisture_graph_range = upper_threshold - lower_threshold
-    moisture_graph_value = moisturelvl - lower_threshold
-    if (running_mode == 0) {
-        //  In running running_mode, check if the moisture is in range and alert if it is not
-        if (moisture_graph_value <= 0) {
+    // Calculate the range (in case it has changed)
+    mgraph_range = top_threshold - low_threshold
+    mgraph_val = moisturelvl - low_threshold
+    if (mode == 0) {
+        // In running mode, check if the moisture is in range and alert if it is not
+        if (mgraph_val <= 0) {
             basic.showIcon(IconNames.Umbrella)
             soundExpression.twinkle.playUntilDone()
         }
-        
     }
-    
-    //  In other running_modes, display the current moisture in the context of the specified moisture_graph_range
-    led.plotBarGraph(moisture_graph_value, moisture_graph_range)
-    //  Pause to leave the display on long enough to be seen
+    // In other modes, display the current moisture in the context of the specified mgraph_range
+    led.plotBarGraph(
+    mgraph_val,
+    mgraph_range
+    )
+    // Pause to leave the display on long enough to be seen
     basic.pause(delay_ms)
 })
